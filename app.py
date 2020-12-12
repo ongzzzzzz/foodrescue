@@ -97,15 +97,5 @@ if img:
   st.markdown('# {}'.format(pred))
 
 
-# -------------------- Random Images --------------------
-
-# st.markdown('<hr>', unsafe_allow_html=True)
-
-# rand = streamlit.number_input('Num of Random Images')
-
-# if st.button('Show Images'):
-  
-
-
 
 
