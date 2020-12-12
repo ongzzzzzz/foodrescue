@@ -17,16 +17,23 @@ from torchvision import datasets, transforms, models
 from torch.autograd import Variable
 
 st.set_page_config(
-  page_title="Fruiesh",
+  page_title="FoodRescue",
   page_icon=":seedling:",
   layout="centered",
   initial_sidebar_state="collapsed",
 )
 select_block_container_style()
 
+# -------------------- Header --------------------
+
+st.markdown('# FoodRescue - Rescuing your Food.')
+
+
+
 # -------------------- Helper Functions --------------------
 
 data_dir = 'data/dataset/test'
+
 test_transforms = transforms.Compose([transforms.Resize((224, 224)),
                                       transforms.ToTensor(),
                                     ])
@@ -34,6 +41,8 @@ test_transforms = transforms.Compose([transforms.Resize((224, 224)),
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('fruitmodel.pth')
 model.eval()
+
+classes = datasets.ImageFolder(data_dir, transform=test_transforms).classes
 
 @st.cache
 def predict_image(image):
@@ -63,51 +72,40 @@ def get_random_images(num):
 
 # -------------------- Upload --------------------
 
-# if not os.path.isdir('temp'):
-#   os.mkdir('temp')
+st.markdown('<hr>', unsafe_allow_html=True)
 
-# -------------------- Header --------------------
-
-st.markdown('## is your apple 🍎, orange 🍊, or a banana 🍌 spoilt?')
+st.markdown('## Is your apple/orange/banana spoilt?')
+st.markdown('## 🍎🍊🍌')
 
 img = None
-uploaded_file = st.file_uploader('upload your image to find out!')
+uploaded_file = st.file_uploader('')
 
 if uploaded_file is not None:
   img = Image.open(uploaded_file)
+  # model only support 3 color channel image
+  if img.mode in ("RGBA", "P"): img = img.convert("RGB")
   st.success('Uploaded!')
-
 
 # -------------------- Display --------------------
 
 img_display = st.empty()
 col_width = False
+
 if img:
-  classes = datasets.ImageFolder(data_dir, transform=test_transforms).classes
-  
   pred = classes[predict_image(img)]
   img_display.image(img, use_column_width=col_width)
   st.markdown('# {}'.format(pred))
 
 
-# if st.button("Process Image!"):
-#   det = Detector(model="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", device='cuda')
-#   # convert to cv2 img
-#   img_cv = utils.pil_to_cv2(img)
-#   # predict
-#   output = det.predict(img_cv)
-#   out_img = det.visualize(img_cv, output, figsize=(18,18))
-#   # convert back to PIL for streamlit
-#   img = Image.fromarray(out_img)
+# -------------------- Random Images --------------------
 
-#   print('done!')
+# st.markdown('<hr>', unsafe_allow_html=True)
 
-#   temp_stat += 1
-#   img.save('temp/{}.jpg'.format(str(temp_stat)))
+# rand = streamlit.number_input('Num of Random Images')
 
-#   main_display.image(img, use_column_width=col_width)
+# if st.button('Show Images'):
+  
 
-# -------------------- Clear --------------------
-# if st.button("Clear Workspace"):
-#   shutil.rmtree("temp")
+
+
 
