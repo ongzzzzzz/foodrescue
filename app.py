@@ -32,7 +32,7 @@ st.markdown('# FoodRescue - Rescuing your Food.')
 
 # -------------------- Helper Functions --------------------
 
-data_dir = 'data/dataset/test'
+# data_dir = 'data/dataset/test'
 
 test_transforms = transforms.Compose([transforms.Resize((224, 224)),
                                       transforms.ToTensor(),
@@ -42,7 +42,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('fruitmodel.pth')
 model.eval()
 
-classes = datasets.ImageFolder(data_dir, transform=test_transforms).classes
+classes = ['freshapples', 'freshbanana', 'freshoranges', 'rottenapples', 'rottenbanana', 'rottenoranges']
 
 @st.cache
 def predict_image(image):
@@ -54,20 +54,20 @@ def predict_image(image):
   index = output.data.cpu().numpy().argmax()
   return index
 
-@st.cache
-def get_random_images(num):
-  data = datasets.ImageFolder(data_dir, transform=test_transforms)
-  classes = data.classes
-  indices = list(range(len(data)))
-  np.random.shuffle(indices)
-  idx = indices[:num]
-  from torch.utils.data.sampler import SubsetRandomSampler
-  sampler = SubsetRandomSampler(idx)
-  loader = torch.utils.data.DataLoader(data, 
-              sampler=sampler, batch_size=num)
-  dataiter = iter(loader)
-  images, labels = dataiter.next()
-  return images, labels
+# @st.cache
+# def get_random_images(num):
+#   data = datasets.ImageFolder(data_dir, transform=test_transforms)
+#   classes = data.classes
+#   indices = list(range(len(data)))
+#   np.random.shuffle(indices)
+#   idx = indices[:num]
+#   from torch.utils.data.sampler import SubsetRandomSampler
+#   sampler = SubsetRandomSampler(idx)
+#   loader = torch.utils.data.DataLoader(data, 
+#               sampler=sampler, batch_size=num)
+#   dataiter = iter(loader)
+#   images, labels = dataiter.next()
+#   return images, labels
 
 
 # -------------------- Upload --------------------
@@ -95,7 +95,3 @@ if img:
   pred = classes[predict_image(img)]
   img_display.image(img, use_column_width=col_width)
   st.markdown('# {}'.format(pred))
-
-
-
-
